@@ -7,9 +7,12 @@ const mock = new MockAdapter(apiClient, { delayResponse: 500 });
 
 // GET /clubs?search=&category=
 mock.onGet(/\/clubs$/).reply((config) => {
-  const params = new URLSearchParams(config.params);
-  const search = (params.get("search") ?? "").toLowerCase();
-  const category = params.get("category");
+  const { search: rawSearch, category } = (config.params ?? {}) as {
+    search?: string;
+    category?: string;
+  };
+
+  const search = (rawSearch ?? "").toLowerCase();
 
   let results = mockClubs;
   if (search) {

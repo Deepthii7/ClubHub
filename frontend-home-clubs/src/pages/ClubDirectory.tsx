@@ -38,6 +38,7 @@ export default function ClubDirectory() {
     search: debouncedSearch || undefined,
     category: urlCategory,
   });
+  console.log("clubs from useClubs:", clubs);
 
   const sorted = useMemo(
     () => (clubs ? [...clubs].sort((a, b) => a.name.localeCompare(b.name)) : []),
