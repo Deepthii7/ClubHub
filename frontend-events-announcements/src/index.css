@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --bg: #EDE8DC;
+  --cork: #B8935A;
+  --black: #111111;
+  --white: #FFFFFF;
+  --red: #E04F3D;
+  --yellow: #E8A020;
+  --green: #2D6A4F;
+  --shadow: 6px 6px 0px 0px #111111;
+  --shadow-sm: 4px 4px 0px 0px #111111;
+  --shadow-lg: 8px 8px 0px 0px #111111;
+  --border: 3px solid #111111;
+  --border-thin: 2px solid #111111;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--black);
+  margin: 0;
+  padding: 0;
+}
+
+.font-display {
+  font-family: 'Anton', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.font-mono-label {
+  font-family: 'Space Mono', monospace;
+}
+
+/* Hide scrollbar, show on hover */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
+*:hover::-webkit-scrollbar-thumb { background: #11111140; }
+
+/* Pinned card transition */
+.pinned-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.pinned-card:hover {
+  transform: rotate(0deg) translateY(-4px) !important;
+  box-shadow: 10px 10px 0px 0px #111111 !important;
+}
+
+/* Filter pill */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  background: transparent;
+  color: #111111;
+  white-space: nowrap;
+}
+.filter-pill.active {
+  background: #111111;
+  color: #ffffff;
+}
+.filter-pill:hover:not(.active) {
+  background: #11111110;
+}
+
+/* Registration modal input focus */
+.brute-input:focus {
+  outline: none;
+  box-shadow: 4px 4px 0px 0px #111111;
+}
