@@ -28,6 +28,9 @@ export default function AnnouncementForm({
     content: initial?.content ?? "",
     clubId: initialClubId,
     pinned: initial?.pinned ?? false,
+    date: initial?.date ?? "",
+    time: initial?.time ?? "",
+    venue: initial?.venue ?? "",
   });
 
   function handleSubmit(e: FormEvent) {
@@ -59,6 +62,29 @@ export default function AnnouncementForm({
         value={form.clubId ?? ""}
         onChange={(e) => setForm({ ...form, clubId: e.target.value })}
       >
+      <Input
+        label="Date"
+        name="date"
+        type="date"
+        value={form.date ?? ""}
+        onChange={(e) => setForm({ ...form, date: e.target.value })}
+      />
+
+      <Input
+        label="Time"
+        name="time"
+        type="time"
+        value={form.time ?? ""}
+        onChange={(e) => setForm({ ...form, time: e.target.value })}
+      />
+
+      <Input
+        label="Venue"
+        name="venue"
+        value={form.venue ?? ""}
+        onChange={(e) => setForm({ ...form, venue: e.target.value })}
+        placeholder="e.g. Main Lab, Room 101"
+      />
         <option value="">Platform-wide</option>
         {clubs.map((c) => (
           <option key={c._id} value={c._id}>

@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import PinnedCard from '../components/PinnedCard'
-import { ANNOUNCEMENTS } from '../data'
+import api from '../api'
 
 const PRIORITY_LABELS: Record<string, string> = {
   HIGH: 'HIGH PRIORITY',
@@ -8,8 +9,40 @@ const PRIORITY_LABELS: Record<string, string> = {
 }
 
 export default function BoardPage() {
-  const highPriority = ANNOUNCEMENTS.filter(a => a.priority === 'HIGH')
-  const rest = ANNOUNCEMENTS.filter(a => a.priority !== 'HIGH')
+  const [announcements, setAnnouncements] = useState<any[]>([])
+
+  useEffect(() => {
+    api.get('/announcements')
+      .then(response => {
+        console.log('Backend announcements:', response.data)
+        setAnnouncements(
+          response.data.map((ann: any, index: number) => ({
+            id: ann._id,
+            title: ann.title,
+            description: ann.description,
+            org: ann.clubId?.name || 'ClubHub',
+            priority: 'MEDIUM',
+            date: ann.date
+              ? new Date(ann.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })
+            : 'Date TBA',
+            time: 'Time TBA',
+            location: ann.venue || 'Venue TBA',
+            color: index % 2 === 0 ? '#E04F3D' : '#F2A51A',
+            rotation: index % 2 === 0 ? -1 : 1,
+          }))
+        )
+      })
+      .catch(error => {
+        console.error('Failed to fetch announcements:', error)
+      })
+  }, [])
+
+  const highPriority = announcements.filter(a => a.priority === 'HIGH')
+  const rest = announcements.filter(a => a.priority !== 'HIGH')
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>

@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PinnedCard from '../components/PinnedCard'
-import { CLUBS, type Page } from '../data'
-
+import api from '../api'
+import type { Page } from '../data'
 const ALL_CATEGORIES = ['ALL', 'TECHNOLOGY', 'ARTS & CULTURE', 'SPORTS', 'ACADEMIC', 'MUSIC', 'SOCIAL IMPACT', 'GAMING', 'BUSINESS']
 
 interface DirectoryPageProps {
@@ -11,8 +11,19 @@ interface DirectoryPageProps {
 export default function DirectoryPage({ onNavigate: _onNavigate }: DirectoryPageProps) {
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('ALL')
-
-  const filtered = CLUBS.filter(club => {
+  const [clubs, setClubs] = useState<any[]>([])
+  const [selectedClub, setSelectedClub] = useState<any | null>(null)
+  useEffect(() => {
+    api.get('/clubs')
+      .then(response => {
+        console.log('Backend clubs:', response.data)
+        setClubs(response.data)
+      })
+      .catch(error => {
+        console.error('Failed to fetch clubs:', error)
+      })
+  }, [])
+  const filtered = clubs.filter(club => {
     const matchCat = activeCategory === 'ALL' || club.category === activeCategory
     const matchSearch = club.name.toLowerCase().includes(search.toLowerCase()) ||
       club.category.toLowerCase().includes(search.toLowerCase()) ||
@@ -85,6 +96,7 @@ export default function DirectoryPage({ onNavigate: _onNavigate }: DirectoryPage
             key={club.id}
             color={club.color}
             rotation={club.rotation}
+            onClick={() => setSelectedClub(club)}
             headerContent={
               <>
                 <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: club.color === '#111111' ? '#fff' : '#111' }}>
@@ -117,6 +129,217 @@ export default function DirectoryPage({ onNavigate: _onNavigate }: DirectoryPage
         <div style={{ textAlign: 'center', padding: '80px 0', color: '#888' }}>
           <p style={{ fontFamily: 'Anton, sans-serif', fontSize: 32, marginBottom: 12 }}>Nothing pinned here.</p>
           <p style={{ fontFamily: 'Space Mono, monospace', fontSize: 12 }}>Try a different search or category.</p>
+        </div>
+      )}
+          {selectedClub && (
+        <div
+          onClick={() => setSelectedClub(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 24,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: 560,
+              backgroundColor: '#fff',
+              border: '3px solid #111',
+              boxShadow: '10px 10px 0 #111',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: selectedClub.color,
+                padding: '24px 28px',
+                borderBottom: '3px solid #111',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: 20,
+              }}
+            >
+              <div>
+                <p
+                  style={{
+                    fontFamily: 'Space Mono, monospace',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    margin: '0 0 8px',
+                    color: selectedClub.color === '#111111' ? '#fff' : '#111',
+                  }}
+                >
+                  {selectedClub.category}
+                </p>
+
+                <h2
+                  style={{
+                    fontFamily: 'Anton, sans-serif',
+                    fontSize: 34,
+                    lineHeight: 1.05,
+                    margin: 0,
+                    color: selectedClub.color === '#111111' ? '#fff' : '#111',
+                  }}
+                >
+                  {selectedClub.name}
+                </h2>
+              </div>
+
+              <button
+                onClick={() => setSelectedClub(null)}
+                style={{
+                  width: 38,
+                  height: 38,
+                  backgroundColor: '#fff',
+                  border: '2px solid #111',
+                  fontFamily: 'Space Mono, monospace',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ padding: 28 }}>
+              <p
+                style={{
+                  fontSize: 15,
+                  lineHeight: 1.7,
+                  color: '#444',
+                  margin: '0 0 24px',
+                }}
+              >
+                {selectedClub.description}
+              </p>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 14,
+                  marginBottom: 24,
+                }}
+              >
+                <div
+                  style={{
+                    border: '2px solid #111',
+                    padding: 16,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Space Mono, monospace',
+                      fontSize: 9,
+                      color: '#888',
+                      margin: '0 0 6px',
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    MEMBERS
+                  </p>
+
+                  <strong
+                    style={{
+                      fontFamily: 'Anton, sans-serif',
+                      fontSize: 24,
+                    }}
+                  >
+                    {selectedClub.members}
+                  </strong>
+                </div>
+
+                <div
+                  style={{
+                    border: '2px solid #111',
+                    padding: 16,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'Space Mono, monospace',
+                      fontSize: 9,
+                      color: '#888',
+                      margin: '0 0 6px',
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    MEETS
+                  </p>
+
+                  <strong
+                    style={{
+                      fontFamily: 'Space Mono, monospace',
+                      fontSize: 13,
+                    }}
+                  >
+                    {selectedClub.meetDay}
+                  </strong>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  borderTop: '2px dashed #bbb',
+                  paddingTop: 20,
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'Space Mono, monospace',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    margin: '0 0 10px',
+                  }}
+                >
+                  HOW TO JOIN
+                </p>
+
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: '#555',
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  {selectedClub.status === 'RECRUITING'
+                    ? 'This club is currently recruiting. Contact the club representatives or attend their next meeting to join.'
+                    : 'This club is currently closed for recruitment. Check back later for new openings.'}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setSelectedClub(null)}
+                style={{
+                  width: '100%',
+                  marginTop: 24,
+                  padding: '14px 20px',
+                  backgroundColor: '#111',
+                  color: '#fff',
+                  border: 'none',
+                  boxShadow: '5px 5px 0 #E04F3D',
+                  fontFamily: 'Space Mono, monospace',
+                  fontWeight: 700,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  letterSpacing: '0.06em',
+                }}
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

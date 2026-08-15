@@ -9,7 +9,15 @@ import RegistrationModal from './components/RegistrationModal'
 import type { Page, EventData } from './data'
 
 export default function App() {
-  const [page, setPage] = useState<Page>('home')
+  const [page, setPage] = useState<Page>(() => {
+    const path = window.location.pathname
+
+    if (path === '/events') return 'events'
+    if (path === '/directory') return 'directory'
+    if (path === '/board') return 'board'
+
+    return 'home'
+  })
   const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null)
 
   const navigate = (p: Page) => {

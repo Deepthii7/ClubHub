@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import api from '../api'
 import PinnedCard from '../components/PinnedCard'
-import { CLUBS, EVENTS, type Page, type EventData } from '../data'
+import { type Page, type EventData } from '../data'
 
 interface HomePageProps {
   onNavigate: (page: Page) => void
@@ -8,8 +9,46 @@ interface HomePageProps {
 }
 
 export default function HomePage({ onNavigate, onSelectEvent }: HomePageProps) {
-  const featured = CLUBS.slice(0, 3)
-  const featuredEvents = EVENTS.slice(0, 3)
+  const [featured, setFeatured] = useState<any[]>([])
+  useEffect(() => {
+    api.get('/clubs')
+      .then(response => {
+        const clubs = response.data.slice(0, 3).map((club: any) => ({
+          ...club,
+          id: club._id,
+          color: '#E04F3D',
+          rotation: 0,
+          status: club.isActive ? 'ACTIVE' : 'INACTIVE',
+          members: '—',
+          meetDay: 'Campus',
+        }))
+
+        setFeatured(clubs)
+      })
+      .catch(error => {
+        console.error('Failed to fetch featured clubs:', error)
+      })
+  }, [])
+  const [featuredEvents, setFeaturedEvents] = useState<EventData[]>([])
+  useEffect(() => {
+    api.get('/events')
+      .then(response => {
+        const events = response.data.slice(0, 3).map((event: any) => ({
+          ...event,
+          id: event._id,
+          color: '#E04F3D',
+          rotation: 0,
+          category: event.clubId?.category || 'EVENT',
+          tags: [],
+        }))
+
+        setFeaturedEvents(events)
+      })
+      .catch(error => {
+        console.error('Failed to fetch featured events:', error)
+      })
+  }, [])
+  
   const [hoveredCta, setHoveredCta] = useState<string | null>(null)
 
   return (
@@ -53,7 +92,7 @@ export default function HomePage({ onNavigate, onSelectEvent }: HomePageProps) {
               <rect x="9" y="12" width="2" height="7" rx="1" fill="#111" />
             </svg>
             <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: '#111' }}>
-              12 CLUBS PINNED UP
+              {featured.length} CLUBS PINNED UP
             </span>
           </div>
           <h1
@@ -231,7 +270,7 @@ export default function HomePage({ onNavigate, onSelectEvent }: HomePageProps) {
                   <h3 style={{ fontFamily: 'Anton, sans-serif', fontSize: 22, margin: '0 0 8px', lineHeight: 1.15 }}>{ev.title}</h3>
                   <p style={{ fontSize: 13, color: '#444', lineHeight: 1.6, margin: '0 0 10px' }}>{ev.description.slice(0, 80)}…</p>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {ev.tags.map(tag => (
+                    {(ev.tags || []).map(tag => (
                       <span key={tag} style={{ backgroundColor: '#F4EBD8', border: '1.5px solid #bbb', padding: '2px 7px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: '#555' }}>
                         {tag}
                       </span>
@@ -241,7 +280,13 @@ export default function HomePage({ onNavigate, onSelectEvent }: HomePageProps) {
               }
               footerContent={
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>📅 {ev.date}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>
+                    📅 {new Date(ev.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
                   <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>📍 {ev.venue.split(',')[0]}</span>
                 </div>
               }

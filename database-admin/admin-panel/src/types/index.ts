@@ -45,6 +45,9 @@ export interface Announcement {
   content: string;
   clubId?: Club | string;
   pinned?: boolean;
+  date?: string;
+  time?: string;
+  venue?: string;
   createdAt: string;
   updatedAt: string;
 }

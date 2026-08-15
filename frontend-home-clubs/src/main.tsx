@@ -5,10 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import App from "./App";
 
-// Standalone demo mock — remove this import once VITE_API_BASE_URL points
-// at a real Clubs API backend (see src/lib/axiosClient.ts).
-import "./lib/mockAdapter";
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

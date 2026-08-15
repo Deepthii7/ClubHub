@@ -1,8 +1,16 @@
-import { useState } from 'react'
+import api from '../api'
+import { useEffect, useState } from 'react'
 import PinnedCard from '../components/PinnedCard'
-import { EVENTS, type EventData } from '../data'
+import type { EventData } from '../data'
+function formatEventDate(date: string) {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
 
-const CATEGORIES = ['ALL', 'SOFTWARE', 'HARDWARE', 'AI/ML', 'CYBERSECURITY']
+const CATEGORIES = ['ALL', 'TECHNICAL' , 'CULTURAL', 'SPORTS', 'AI']
 
 interface EventsPageProps {
   onSelectEvent: (event: EventData) => void
@@ -11,9 +19,35 @@ interface EventsPageProps {
 export default function EventsPage({ onSelectEvent }: EventsPageProps) {
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('ALL')
+  const [events, setEvents] = useState<EventData[]>([])
 
-  const filtered = EVENTS.filter(ev => {
-    const matchCat = activeCategory === 'ALL' || ev.category === activeCategory
+  useEffect(() => {
+  api.get('/events')
+    .then(response => {
+      console.log('BACKEND EVENTS:', JSON.stringify(response.data, null, 2))
+      setEvents(
+        response.data.map((event: any) => ({
+          id: event._id,
+          title: event.title,
+          category: event.category || event.clubId?.category || 'GENERAL',
+          org: event.clubId?.name || 'ClubHub',
+          description: event.description,
+          date: new Date(event.date).toLocaleDateString(),
+          time: 'Time TBA',
+          venue: event.venue,
+          tags: [],
+          color: '#E04F3D',
+          rotation: 0,
+        }))
+      )
+    })
+    .catch(error => {
+      console.error('Failed to fetch events:', error)
+    })
+  }, [])
+
+  const filtered = events.filter(ev => {
+    const matchCat = activeCategory === 'ALL' || ev.category.toUpperCase() === activeCategory
     const matchSearch =
       ev.title.toLowerCase().includes(search.toLowerCase()) ||
       ev.category.toLowerCase().includes(search.toLowerCase()) ||
@@ -159,7 +193,7 @@ export default function EventsPage({ onSelectEvent }: EventsPageProps) {
             footerContent={
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>📅 {ev.date}</span>
+                  <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>📅 {formatEventDate(ev.date)}</span>
                   <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>🕐 {ev.time.split('—')[0].trim()}</span>
                 </div>
                 <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: '#666' }}>📍 {ev.venue}</span>
