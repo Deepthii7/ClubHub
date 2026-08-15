@@ -18,11 +18,37 @@ export default function RegistrationModal({ event, onClose }: RegistrationModalP
   const [submitted, setSubmitted] = useState(false)
   const [hovering, setHovering] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.fullName || !form.studentId || !form.email) return
-    setSubmitted(true)
-  }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/events/${event.id}/register`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: form.fullName,
+            email: form.email,
+            phone: '',
+            rollNo: form.studentId,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Registration failed')
+      }
+
+      setSubmitted(true)
+    } catch (error) {
+      console.error('Registration error:', error)
+      alert('Registration failed. Please try again.')
+    } 
+}
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
