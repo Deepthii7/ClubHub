@@ -1,0 +1,10 @@
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+sqlalchemy==2.0.52
+pydantic==2.13.4
+email-validator==2.3.0
+python-dotenv==1.2.3
+vaderSentiment==3.3.2
+scikit-learn==1.9.0
+numpy==2.5.2
+anthropic==0.124.0
