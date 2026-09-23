@@ -67,7 +67,7 @@ ClubHub/
 │
 └── README.md
 
-Event Registration Flow
+## **Event Registration Flow**
 Student
    ↓
 Browse Events
@@ -86,7 +86,7 @@ Admin Panel
    ↓
 View Registrations
 
-Running the Project Locally
+## **Running the Project Locally**
 1. Clone the Repository
 git clone https://github.com/Deepthii7/ClubHub.git
 cd ClubHub
@@ -101,7 +101,7 @@ npm install
 npm run dev
 Start the other frontend and admin modules similarly when required.
 
-Current Status
+## **Current Status**
 ClubHub currently supports the core club and event management workflow, including event discovery, event registration, backend API integration, MongoDB storage, and registration management through the admin panel.
 
-Developed as a TechVayuna AI Domain project.
+## Developed as a TechVayuna AI Domain project.
